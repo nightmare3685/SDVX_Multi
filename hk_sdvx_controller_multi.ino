@@ -19,7 +19,6 @@ volatile int posision[2] = {0, 0};
 volatile int Arrayright[2] = {0, 0};
 volatile int Arrayleft[2] = {0, 0};
 volatile int MAX = 10;
-//
 int16_t AnalogPadX = 0;
 int16_t AnalogPadY = 0;
 uint16_t AnalogPadz = 0;
@@ -28,6 +27,7 @@ uint16_t AnalogPadrz = 0;
 int Mode;
 int ModeCount[7];
 Button button;
+
 void setup()
 {
 
@@ -42,15 +42,15 @@ void setup()
   PCICR |= (1 << PCIE0);
   PCMSK0 |= (1 << PCINT4) | (1 << PCINT5) | (1 << PCINT7) | (1 << PCINT6);
   sei();
-  Mode = 3;
-
+  Mode = 0;
 }
 
 void loop()
 {
   keyFunc();
   ReduseValue();
-  Serial.println("sizeof int :" + String(sizeof(int)));
+  ModeChange();
+  //  Serial.println("sizeof int :" + String(sizeof(int)));
   Serial.println("Mode:" + String(Mode));
 }
 void ReduseValue()
@@ -84,7 +84,7 @@ void keyFunc()
       NKROKeyboard.release(button.keymap[i]);
     }
   }
-  if (Mode == 0)
+  if (Mode == 0)//
   {
     Arrayright[button.VOL_L] > 0 ? NKROKeyboard.press(button.VOL_LR) : NKROKeyboard.release(button.VOL_LR); //左のつまみが右回転
     Arrayright[button.VOL_R] > 0 ? NKROKeyboard.press(button.VOL_RR) : NKROKeyboard.release(button.VOL_RR); //右のつまみが右回転
@@ -101,12 +101,10 @@ void keyFunc()
   }
   else if (Mode == 2)
   {
-    Arrayright[button.VOL_L] > 0 ? AnalogPadX += 2500 : AnalogPadX += 0;//左のつまみが右回転
-    Arrayright[button.VOL_R] > 0 ? AnalogPadY += 2500 : AnalogPadY += 0;//右のつまみが左回転
-    Arrayleft[button.VOL_L] > 0 ? AnalogPadX -= 2500 : AnalogPadX -= 0; //左のつまみが左回転
-    Arrayleft[button.VOL_R] > 0 ? AnalogPadY -= 2500: AnalogPadY -= 0 ;//右のつまみが右回転
-
-
+    Arrayright[button.VOL_L] > 0 ? AnalogPadX += 2500 : AnalogPadX += 0; //左のつまみが右回転
+    Arrayright[button.VOL_R] > 0 ? AnalogPadY += 2500 : AnalogPadY += 0; //右のつまみが左回転
+    Arrayleft[button.VOL_L] > 0 ? AnalogPadX -= 2500 : AnalogPadX -= 0;  //左のつまみが左回転
+    Arrayleft[button.VOL_R] > 0 ? AnalogPadY -= 2500 : AnalogPadY -= 0;  //右のつまみが右回転
 
     Gamepad.xAxis(AnalogPadX);
     Gamepad.yAxis(AnalogPadY);
@@ -116,15 +114,14 @@ void keyFunc()
   else if (Mode == 3)
   {
 
-    Arrayright[button.VOL_L] > 0 ? AnalogPadz += 2500 : AnalogPadz += 0;//左のつまみが右回転
-    Arrayright[button.VOL_R] > 0 ? AnalogPadrz += 2500 : AnalogPadrz += 0;//右のつまみが左回転
-    Arrayleft[button.VOL_L] > 0 ? AnalogPadz -= 2500 : AnalogPadz -= 0; //左のつまみが左回転
-    Arrayleft[button.VOL_R] > 0 ? AnalogPadrz -= 2500 : AnalogPadrz -= 0 ; //右のつまみが右回転
+    Arrayright[button.VOL_L] > 0 ? AnalogPadz += 2500 : AnalogPadz += 0;   //左のつまみが右回転
+    Arrayright[button.VOL_R] > 0 ? AnalogPadrz += 2500 : AnalogPadrz += 0; //右のつまみが左回転
+    Arrayleft[button.VOL_L] > 0 ? AnalogPadz -= 2500 : AnalogPadz -= 0;    //左のつまみが左回転
+    Arrayleft[button.VOL_R] > 0 ? AnalogPadrz -= 2500 : AnalogPadrz -= 0;  //右のつまみが右回転
 
     Gamepad.zAxis(AnalogPadz);
     Gamepad.rzAxis(AnalogPadrz);
-    Serial.println(AnalogPadX);
-    Serial.println(AnalogPadY);
+
     Gamepad.write();
   }
 }
@@ -158,6 +155,27 @@ ISR(PCINT0_vect)
 }
 void ModeChange()
 {
-  
-  
+  Serial.println(ModeCount[0]);
+  if (!digitalRead(6) == HIGH)
+  {
+    if (!digitalRead(0) == HIGH && !digitalRead(1) == LOW && !digitalRead(2) == LOW) {
+      ModeCount[0]++;
+      if (ModeCount[0] > 250) {
+
+        Mode = 0;
+      }
+    }
+    else if (!digitalRead(0) == LOW && !digitalRead(1) == HIGH && !digitalRead(2) == LOW) {
+      ModeCount[1]++;
+      if (ModeCount[1] > 250) {
+
+        Mode = 1;
+      }}
+    else if (!digitalRead(0) == LOW && !digitalRead(1) == LOW && !digitalRead(2) == HIGH) {}
+    else {
+      ModeCount[0] = 0;
+    }
   }
+
+
+}
