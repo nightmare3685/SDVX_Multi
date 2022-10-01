@@ -4,13 +4,13 @@
 
 class Button
 {
-  public:
-    const char keymap[6] = {'s', 'd', 'k', 'l', 'c', 'm' /*6:Enter 7:ESC*/};
-    const char VOL_L = 0, VOL_R = 1;
-    const char VOL_LL = 'q', VOL_LR = 'w', VOL_RL = 'o', VOL_RR = 'p';
+public:
+  const char keymap[6] = {'s', 'd', 'k', 'l', 'c', 'm' /*6:Enter 7:ESC*/};
+  const char VOL_L = 0, VOL_R = 1;
+  const char VOL_LL = 'q', VOL_LR = 'w', VOL_RL = 'o', VOL_RR = 'p';
 
-  private:
-    ;
+private:
+  ;
 };
 
 Rotary r1 = Rotary(8, 9);
@@ -84,14 +84,14 @@ void keyFunc()
       NKROKeyboard.release(button.keymap[i]);
     }
   }
-  if (Mode == 0)//
+  if (Mode == 0) //キーボードモード
   {
     Arrayright[button.VOL_L] > 0 ? NKROKeyboard.press(button.VOL_LR) : NKROKeyboard.release(button.VOL_LR); //左のつまみが右回転
     Arrayright[button.VOL_R] > 0 ? NKROKeyboard.press(button.VOL_RR) : NKROKeyboard.release(button.VOL_RR); //右のつまみが右回転
     Arrayleft[button.VOL_L] > 0 ? NKROKeyboard.press(button.VOL_LL) : NKROKeyboard.release(button.VOL_LL);  //左のつまみが左回転
     Arrayleft[button.VOL_R] > 0 ? NKROKeyboard.press(button.VOL_RL) : NKROKeyboard.release(button.VOL_RL);  //右のつまみが左回転
   }
-  else if (Mode == 1)
+  else if (Mode == 1) //マウス座標モード
   {
     int pos = 30;
     Arrayright[button.VOL_L] > 0 ? Mouse.move(pos, 0) : Mouse.move(0, 0); //左のつまみが右回転
@@ -99,7 +99,7 @@ void keyFunc()
     Arrayleft[button.VOL_L] > 0 ? Mouse.move(-pos, 0) : Mouse.move(0, 0); //左のつまみが左回転
     Arrayleft[button.VOL_R] > 0 ? Mouse.move(0, -pos) : Mouse.move(0, 0); //右のつまみが右回転
   }
-  else if (Mode == 2)
+  else if (Mode == 2) //アナログスティックモード
   {
     Arrayright[button.VOL_L] > 0 ? AnalogPadX += 2500 : AnalogPadX += 0; //左のつまみが右回転
     Arrayright[button.VOL_R] > 0 ? AnalogPadY += 2500 : AnalogPadY += 0; //右のつまみが左回転
@@ -111,7 +111,7 @@ void keyFunc()
 
     Gamepad.write();
   }
-  else if (Mode == 3)
+  else if (Mode == 3) //アナログスライダーモード
   {
 
     Arrayright[button.VOL_L] > 0 ? AnalogPadz += 2500 : AnalogPadz += 0;   //左のつまみが右回転
@@ -158,24 +158,30 @@ void ModeChange()
   Serial.println(ModeCount[0]);
   if (!digitalRead(6) == HIGH)
   {
-    if (!digitalRead(0) == HIGH && !digitalRead(1) == LOW && !digitalRead(2) == LOW) {
+    if (!digitalRead(0) == HIGH && !digitalRead(1) == LOW && !digitalRead(2) == LOW)
+    {
       ModeCount[0]++;
-      if (ModeCount[0] > 250) {
+      if (ModeCount[0] > 250)
+      {
 
         Mode = 0;
       }
     }
-    else if (!digitalRead(0) == LOW && !digitalRead(1) == HIGH && !digitalRead(2) == LOW) {
+    else if (!digitalRead(0) == LOW && !digitalRead(1) == HIGH && !digitalRead(2) == LOW)
+    {
       ModeCount[1]++;
-      if (ModeCount[1] > 250) {
+      if (ModeCount[1] > 250)
+      {
 
         Mode = 1;
-      }}
-    else if (!digitalRead(0) == LOW && !digitalRead(1) == LOW && !digitalRead(2) == HIGH) {}
-    else {
+      }
+    }
+    else if (!digitalRead(0) == LOW && !digitalRead(1) == LOW && !digitalRead(2) == HIGH)
+    {
+    }
+    else
+    {
       ModeCount[0] = 0;
     }
   }
-
-
 }
