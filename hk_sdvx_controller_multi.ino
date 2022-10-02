@@ -2,6 +2,11 @@
 #include <HID-Settings.h>
 #include <Rotary.h>
 
+enum Mode
+{
+  keymode,
+  Mousemode,
+};
 class Button
 {
 public:
@@ -12,9 +17,13 @@ public:
 private:
   ;
 };
+const int ENC1_A = 8;
+const int ENC1_B = 9;
+const int ENC2_A = 10;
+const int ENC2_B = 11;
 
-Rotary r1 = Rotary(8, 9);
-Rotary r2 = Rotary(10, 11);
+Rotary r1 = Rotary(ENC1_A, ENC1_B);
+Rotary r2 = Rotary(ENC2_A, ENC1_B);
 volatile int posision[2] = {0, 0};
 volatile int Arrayright[2] = {0, 0};
 volatile int Arrayleft[2] = {0, 0};
@@ -26,8 +35,9 @@ uint16_t AnalogPadrz = 0;
 
 int Mode;
 int ModeCount[7];
+const int MODECOUNTMAX = 250;
 Button button;
-
+int ButtonFlag;
 void setup()
 {
 
@@ -50,6 +60,7 @@ void loop()
   keyFunc();
   ReduseValue();
   ModeChange();
+
   //  Serial.println("sizeof int :" + String(sizeof(int)));
   Serial.println("Mode:" + String(Mode));
 }
@@ -84,14 +95,14 @@ void keyFunc()
       NKROKeyboard.release(button.keymap[i]);
     }
   }
-  if (Mode == 0) //キーボードモード
+  if (Mode == keymode) //キーボードモード
   {
     Arrayright[button.VOL_L] > 0 ? NKROKeyboard.press(button.VOL_LR) : NKROKeyboard.release(button.VOL_LR); //左のつまみが右回転
     Arrayright[button.VOL_R] > 0 ? NKROKeyboard.press(button.VOL_RR) : NKROKeyboard.release(button.VOL_RR); //右のつまみが右回転
     Arrayleft[button.VOL_L] > 0 ? NKROKeyboard.press(button.VOL_LL) : NKROKeyboard.release(button.VOL_LL);  //左のつまみが左回転
     Arrayleft[button.VOL_R] > 0 ? NKROKeyboard.press(button.VOL_RL) : NKROKeyboard.release(button.VOL_RL);  //右のつまみが左回転
   }
-  else if (Mode == 1) //マウス座標モード
+  else if (Mode == Mousemode) //マウス座標モード
   {
     int pos = 30;
     Arrayright[button.VOL_L] > 0 ? Mouse.move(pos, 0) : Mouse.move(0, 0); //左のつまみが右回転
@@ -153,35 +164,41 @@ ISR(PCINT0_vect)
     }
   }
 }
+
 void ModeChange()
 {
-  Serial.println(ModeCount[0]);
-  if (!digitalRead(6) == HIGH)
+  for (int i = 0; i < 5; i++)
   {
-    if (!digitalRead(0) == HIGH && !digitalRead(1) == LOW && !digitalRead(2) == LOW)
-    {
-      ModeCount[0]++;
-      if (ModeCount[0] > 250)
-      {
 
-        Mode = 0;
-      }
-    }
-    else if (!digitalRead(0) == LOW && !digitalRead(1) == HIGH && !digitalRead(2) == LOW)
+    if (!digitalRead(13) == HIGH && !digitalRead(i) == HIGH)
     {
-      ModeCount[1]++;
-      if (ModeCount[1] > 250)
-      {
-
-        Mode = 1;
-      }
-    }
-    else if (!digitalRead(0) == LOW && !digitalRead(1) == LOW && !digitalRead(2) == HIGH)
-    {
-    }
-    else
-    {
-      ModeCount[0] = 0;
+      ButtonFlag = B10000000 | !digitalRead(i) << i;
     }
   }
+  Serial.println(ButtonFlag, BIN);
+
+  switch (ButtonFlag)
+  {
+
+  case B10000001:
+    ModeCount[keymode]++;
+    break;
+  case B10000010:
+    ModeCount[Mousemode]++;
+    break;
+  default:
+    ModeCount[keymode] = 0;
+    ModeCount[Mousemode] = 0;
+    break;
+  }
+
+  if (ModeCount[keymode] > MODECOUNTMAX)
+  {
+    Mode = keymode;
+  }
+  else if (ModeCount[Mousemode] > MODECOUNTMAX)
+  {
+    Mode = Mousemode;
+  }
+  ButtonFlag = B00000000;
 }
