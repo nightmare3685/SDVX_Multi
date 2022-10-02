@@ -6,6 +6,8 @@ enum Mode
 {
   keymode,
   Mousemode,
+  AnalogXYmode,
+  AnalogZrZmode,
 };
 class Button
 {
@@ -140,6 +142,7 @@ void keyFunc()
 ISR(PCINT0_vect)
 {
   unsigned char result[2];
+
   result[0] = r1.process();
   result[1] = r2.process();
   for (int i = 0; i <= 2; i++)
