@@ -29,7 +29,7 @@ Rotary r2 = Rotary(ENC2_A, ENC1_B);
 volatile int posision[2] = {0, 0};
 volatile int Arrayright[2] = {0, 0};
 volatile int Arrayleft[2] = {0, 0};
-volatile int MAX = 10;
+volatile const int ENCMAX = 10;
 int16_t AnalogPadX = 0;
 int16_t AnalogPadY = 0;
 uint16_t AnalogPadz = 0;
@@ -149,20 +149,20 @@ ISR(PCINT0_vect)
   {
     if (result[i] == DIR_CCW)
     { //反時計回りに回った時
-      Arrayright[i] -= MAX / 2;
+      Arrayright[i] -= ENCMAX / 2;
       if (Arrayright[i] < 0)
       {
-        Arrayleft[i] = MAX;
+        Arrayleft[i] = ENCMAX;
         Arrayright[i] = 0;
       }
     }
     else if (result[i] == DIR_CW)
     { //時計回りに回った時
-      Arrayleft[i] -= MAX / 2;
+      Arrayleft[i] -= ENCMAX / 2;
       if (Arrayleft[i] < 0)
       {
         Arrayleft[i] = 0;
-        Arrayright[i] = MAX;
+        Arrayright[i] = ENCMAX;
       }
     }
   }
