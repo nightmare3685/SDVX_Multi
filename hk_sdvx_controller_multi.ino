@@ -19,17 +19,18 @@ public:
 private:
   ;
 };
-const int ENC1_A = 8;
-const int ENC1_B = 9;
-const int ENC2_A = 10;
-const int ENC2_B = 11;
+const char ENC1_A = 8;
+const char ENC1_B = 9;
+const char ENC2_A = 10;
+const char ENC2_B = 11;
 
 Rotary r1 = Rotary(ENC1_A, ENC1_B);
-Rotary r2 = Rotary(ENC2_A, ENC1_B);
+Rotary r2 = Rotary(ENC2_A, ENC2_B);
 volatile int posision[2] = {0, 0};
 volatile int Arrayright[2] = {0, 0};
 volatile int Arrayleft[2] = {0, 0};
-volatile const int ENCMAX = 10;
+volatile unsigned char result[2];
+volatile const int ENCMAX = 100;
 int16_t AnalogPadX = 0;
 int16_t AnalogPadY = 0;
 uint16_t AnalogPadz = 0;
@@ -37,7 +38,7 @@ uint16_t AnalogPadrz = 0;
 
 int Mode;
 int ModeCount[7];
-const int MODECOUNTMAX = 250;
+const int MODECOUNTMAX = 20;
 Button button;
 int ButtonFlag;
 void setup()
@@ -52,7 +53,7 @@ void setup()
     pinMode(i, INPUT_PULLUP);
   }
   PCICR |= (1 << PCIE0);
-  PCMSK0 |= (1 << PCINT4) | (1 << PCINT5) | (1 << PCINT7) | (1 << PCINT6);
+  PCMSK0 |= (1 << PCINT4) | (1 << PCINT5) | (1 << PCINT6) | (1 << PCINT7);
   sei();
   Mode = 0;
 }
@@ -62,7 +63,10 @@ void loop()
   keyFunc();
   ReduseValue();
   ModeChange();
-
+  //  Serial.println("right" + String(0) + ":" + Arrayright[0]);
+  //  Serial.println("left" + String(0) + ":" + Arrayleft[0]);
+  //  Serial.println("right" + String(1) + ":" + Arrayright[1]);
+  //  Serial.println("left" + String(1) + ":" + Arrayleft[1]);
   //  Serial.println("sizeof int :" + String(sizeof(int)));
   Serial.println("Mode:" + String(Mode));
 }
@@ -112,7 +116,7 @@ void keyFunc()
     Arrayleft[button.VOL_L] > 0 ? Mouse.move(-pos, 0) : Mouse.move(0, 0); //左のつまみが左回転
     Arrayleft[button.VOL_R] > 0 ? Mouse.move(0, -pos) : Mouse.move(0, 0); //右のつまみが右回転
   }
-  else if (Mode == 2) //アナログスティックモード
+  else if (Mode == AnalogXYmode) //アナログスティックXYモード
   {
     Arrayright[button.VOL_L] > 0 ? AnalogPadX += 2500 : AnalogPadX += 0; //左のつまみが右回転
     Arrayright[button.VOL_R] > 0 ? AnalogPadY += 2500 : AnalogPadY += 0; //右のつまみが左回転
@@ -124,7 +128,7 @@ void keyFunc()
 
     Gamepad.write();
   }
-  else if (Mode == 3) //アナログスライダーモード
+  else if (Mode == AnalogZrZmode) //アナログスライダーモード
   {
 
     Arrayright[button.VOL_L] > 0 ? AnalogPadz += 2500 : AnalogPadz += 0;   //左のつまみが右回転
@@ -141,14 +145,18 @@ void keyFunc()
 
 ISR(PCINT0_vect)
 {
-  unsigned char result[2];
 
   result[0] = r1.process();
   result[1] = r2.process();
-  for (int i = 0; i <= 2; i++)
+
+  for (int i = 0; i <= 1; i++)
   {
+
+    // Serial.println("right" + String(i) + ":" + Arrayright[i]);
+    // Serial.println("left" + String(i) + ":" + Arrayleft[i]);
     if (result[i] == DIR_CCW)
     { //反時計回りに回った時
+
       Arrayright[i] -= ENCMAX / 2;
       if (Arrayright[i] < 0)
       {
@@ -158,6 +166,7 @@ ISR(PCINT0_vect)
     }
     else if (result[i] == DIR_CW)
     { //時計回りに回った時
+
       Arrayleft[i] -= ENCMAX / 2;
       if (Arrayleft[i] < 0)
       {
@@ -189,9 +198,17 @@ void ModeChange()
   case B10000010:
     ModeCount[Mousemode]++;
     break;
+  case B10000100:
+    ModeCount[AnalogXYmode]++;
+    break;
+  case B10001000:
+    ModeCount[AnalogZrZmode]++;
+    break;
   default:
     ModeCount[keymode] = 0;
     ModeCount[Mousemode] = 0;
+    ModeCount[AnalogXYmode] = 0;
+    ModeCount[AnalogZrZmode] = 0;
     break;
   }
 
@@ -202,6 +219,14 @@ void ModeChange()
   else if (ModeCount[Mousemode] > MODECOUNTMAX)
   {
     Mode = Mousemode;
+  }
+  else if (ModeCount[AnalogXYmode] > MODECOUNTMAX)
+  {
+    Mode = AnalogXYmode;
+  }
+  else if (ModeCount[AnalogZrZmode] > MODECOUNTMAX)
+  {
+    Mode = AnalogZrZmode;
   }
   ButtonFlag = B00000000;
 }
