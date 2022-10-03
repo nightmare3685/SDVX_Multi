@@ -29,8 +29,8 @@ Rotary r2 = Rotary(ENC2_A, ENC2_B);
 volatile int posision[2] = {0, 0};
 volatile int Arrayright[2] = {0, 0};
 volatile int Arrayleft[2] = {0, 0};
-volatile unsigned char result[2];
-volatile const int ENCMAX = 100;
+volatile const int ENCMAX = 10;
+
 int16_t AnalogPadX = 0;
 int16_t AnalogPadY = 0;
 uint16_t AnalogPadz = 0;
@@ -38,7 +38,7 @@ uint16_t AnalogPadrz = 0;
 
 int Mode;
 int ModeCount[7];
-const int MODECOUNTMAX = 20;
+const int MODECOUNTMAX = 250; //モード切り替え時の長押し時間
 Button button;
 int ButtonFlag;
 void setup()
@@ -179,6 +179,7 @@ ISR(PCINT0_vect)
 
 void ModeChange()
 {
+  unsigned char result[2];
   for (int i = 0; i < 5; i++)
   {
 
