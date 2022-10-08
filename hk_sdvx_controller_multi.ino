@@ -4,10 +4,10 @@
 
 enum Mode
 {
-  keymode,
-  Mousemode,
-  AnalogXYmode,
-  AnalogZrZmode,
+  keymode,       //キー入力モード
+  Mousemode,     //マウス入力モード
+  AnalogXYmode,  //アナログスティックXY循環モード
+  AnalogZrZmode, //アナログスライダー循環モード
 };
 class Button
 {
@@ -38,9 +38,10 @@ uint16_t AnalogPadrz = 0;
 
 int Mode;
 int ModeCount[7];
-const int MODECOUNTMAX = 250; //モード切り替え時の長押し時間
+const int MODECOUNTMAX = 200; //モード切り替え時の長押し時間
 Button button;
 int ButtonFlag;
+
 void setup()
 {
 
@@ -63,12 +64,16 @@ void loop()
   keyFunc();
   ReduseValue();
   ModeChange();
-  //  Serial.println("right" + String(0) + ":" + Arrayright[0]);
-  //  Serial.println("left" + String(0) + ":" + Arrayleft[0]);
-  //  Serial.println("right" + String(1) + ":" + Arrayright[1]);
-  //  Serial.println("left" + String(1) + ":" + Arrayleft[1]);
+
+  // lcd.setCursor(0, 1);
+  // lcd.print("Mode:" + String(Mode));
+  ///
+  Serial.println("right" + String(0) + ":" + Arrayright[0]);
+  Serial.println("left" + String(0) + ":" + Arrayleft[0]);
+  Serial.println("right" + String(1) + ":" + Arrayright[1]);
+  Serial.println("left" + String(1) + ":" + Arrayleft[1]);
   //  Serial.println("sizeof int :" + String(sizeof(int)));
-  Serial.println("Mode:" + String(Mode));
+  // Serial.println("Mode:" + String(Mode));
 }
 void ReduseValue()
 {
@@ -145,7 +150,7 @@ void keyFunc()
 
 ISR(PCINT0_vect)
 {
-
+  int result[2];
   result[0] = r1.process();
   result[1] = r2.process();
 
@@ -180,7 +185,7 @@ ISR(PCINT0_vect)
 void ModeChange()
 {
   unsigned char result[2];
-  for (int i = 0; i < 5; i++)
+  for (int i = 0; i < 8; i++)
   {
 
     if (!digitalRead(13) == HIGH && !digitalRead(i) == HIGH)
@@ -188,18 +193,18 @@ void ModeChange()
       ButtonFlag = B10000000 | !digitalRead(i) << i;
     }
   }
-  Serial.println(ButtonFlag, BIN);
+  // Serial.println(ButtonFlag, BIN);
 
   switch (ButtonFlag)
   {
 
-  case B10000001:
+  case B11000000:
     ModeCount[keymode]++;
     break;
-  case B10000010:
+  case B10100000:
     ModeCount[Mousemode]++;
     break;
-  case B10000100:
+  case B10010000:
     ModeCount[AnalogXYmode]++;
     break;
   case B10001000:
