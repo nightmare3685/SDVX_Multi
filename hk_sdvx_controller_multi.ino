@@ -65,17 +65,14 @@ void loop()
   ReduseValue();
   ModeChange();
 
-  // lcd.setCursor(0, 1);
-  // lcd.print("Mode:" + String(Mode));
-  ///
-  Serial.println("right" + String(0) + ":" + Arrayright[0]);
-  Serial.println("left" + String(0) + ":" + Arrayleft[0]);
-  Serial.println("right" + String(1) + ":" + Arrayright[1]);
-  Serial.println("left" + String(1) + ":" + Arrayleft[1]);
+  // Serial.println("right" + String(0) + ":" + Arrayright[0]);
+  // Serial.println("left" + String(0) + ":" + Arrayleft[0]);
+  // Serial.println("right" + String(1) + ":" + Arrayright[1]);
+  // Serial.println("left" + String(1) + ":" + Arrayleft[1]);
   //  Serial.println("sizeof int :" + String(sizeof(int)));
-  // Serial.println("Mode:" + String(Mode));
+  Serial.println("Mode:" + String(Mode));
 }
-void ReduseValue()
+void ReduseValue() //右、左つまみの値を減らし続ける
 {
   for (int i = 0; i < (sizeof(Arrayleft) / sizeof(int)); i++)
   {
@@ -97,6 +94,7 @@ void keyFunc()
 
   for (int i = 0; i < (sizeof(button.keymap) / sizeof(char)); i++)
   {
+
     if (!digitalRead(i) == HIGH)
     {
       NKROKeyboard.press(button.keymap[i]);
@@ -106,45 +104,51 @@ void keyFunc()
       NKROKeyboard.release(button.keymap[i]);
     }
   }
-  if (Mode == keymode) //キーボードモード
+  if (Mode == keymode)
   {
+    //キーボードモード
+
     Arrayright[button.VOL_L] > 0 ? NKROKeyboard.press(button.VOL_LR) : NKROKeyboard.release(button.VOL_LR); //左のつまみが右回転
     Arrayright[button.VOL_R] > 0 ? NKROKeyboard.press(button.VOL_RR) : NKROKeyboard.release(button.VOL_RR); //右のつまみが右回転
     Arrayleft[button.VOL_L] > 0 ? NKROKeyboard.press(button.VOL_LL) : NKROKeyboard.release(button.VOL_LL);  //左のつまみが左回転
     Arrayleft[button.VOL_R] > 0 ? NKROKeyboard.press(button.VOL_RL) : NKROKeyboard.release(button.VOL_RL);  //右のつまみが左回転
   }
-  else if (Mode == Mousemode) //マウス座標モード
+  else if (Mode == Mousemode)
   {
+    //マウス座標モード
     int pos = 30;
     Arrayright[button.VOL_L] > 0 ? Mouse.move(pos, 0) : Mouse.move(0, 0); //左のつまみが右回転
     Arrayright[button.VOL_R] > 0 ? Mouse.move(0, pos) : Mouse.move(0, 0); //右のつまみが左回転
     Arrayleft[button.VOL_L] > 0 ? Mouse.move(-pos, 0) : Mouse.move(0, 0); //左のつまみが左回転
     Arrayleft[button.VOL_R] > 0 ? Mouse.move(0, -pos) : Mouse.move(0, 0); //右のつまみが右回転
   }
-  else if (Mode == AnalogXYmode) //アナログスティックXYモード
+  else if (Mode == AnalogXYmode)
   {
-    Arrayright[button.VOL_L] > 0 ? AnalogPadX += 2500 : AnalogPadX += 0; //左のつまみが右回転
-    Arrayright[button.VOL_R] > 0 ? AnalogPadY += 2500 : AnalogPadY += 0; //右のつまみが左回転
-    Arrayleft[button.VOL_L] > 0 ? AnalogPadX -= 2500 : AnalogPadX -= 0;  //左のつまみが左回転
-    Arrayleft[button.VOL_R] > 0 ? AnalogPadY -= 2500 : AnalogPadY -= 0;  //右のつまみが右回転
+    //アナログスティックXYモード
+    int AddXY = 2500;
+    Arrayright[button.VOL_L] > 0 ? AnalogPadX += AddXY : AnalogPadX += 0; //左のつまみが右回転
+    Arrayright[button.VOL_R] > 0 ? AnalogPadY += AddXY : AnalogPadY += 0; //右のつまみが左回転
+    Arrayleft[button.VOL_L] > 0 ? AnalogPadX -= AddXY : AnalogPadX -= 0;  //左のつまみが左回転
+    Arrayleft[button.VOL_R] > 0 ? AnalogPadY -= AddXY : AnalogPadY -= 0;  //右のつまみが右回転
 
     Gamepad.xAxis(AnalogPadX);
     Gamepad.yAxis(AnalogPadY);
 
-    Gamepad.write();
+    Gamepad.write(); //送信
   }
-  else if (Mode == AnalogZrZmode) //アナログスライダーモード
+  else if (Mode == AnalogZrZmode)
   {
-
-    Arrayright[button.VOL_L] > 0 ? AnalogPadz += 2500 : AnalogPadz += 0;   //左のつまみが右回転
-    Arrayright[button.VOL_R] > 0 ? AnalogPadrz += 2500 : AnalogPadrz += 0; //右のつまみが左回転
-    Arrayleft[button.VOL_L] > 0 ? AnalogPadz -= 2500 : AnalogPadz -= 0;    //左のつまみが左回転
-    Arrayleft[button.VOL_R] > 0 ? AnalogPadrz -= 2500 : AnalogPadrz -= 0;  //右のつまみが右回転
+    //アナログスライダーモード
+    int Addrrz = 2500;
+    Arrayright[button.VOL_L] > 0 ? AnalogPadz += Addrrz : AnalogPadz += 0;   //左のつまみが右回転
+    Arrayright[button.VOL_R] > 0 ? AnalogPadrz += Addrrz : AnalogPadrz += 0; //右のつまみが左回転
+    Arrayleft[button.VOL_L] > 0 ? AnalogPadz -= Addrrz : AnalogPadz -= 0;    //左のつまみが左回転
+    Arrayleft[button.VOL_R] > 0 ? AnalogPadrz -= Addrrz : AnalogPadrz -= 0;  //右のつまみが右回転
 
     Gamepad.zAxis(AnalogPadz);
     Gamepad.rzAxis(AnalogPadrz);
 
-    Gamepad.write();
+    Gamepad.write(); //送信
   }
 }
 
@@ -193,18 +197,18 @@ void ModeChange()
       ButtonFlag = B10000000 | !digitalRead(i) << i;
     }
   }
-  // Serial.println(ButtonFlag, BIN);
+  Serial.println(ButtonFlag, BIN);
 
   switch (ButtonFlag)
   {
 
-  case B11000000:
+  case B10000001:
     ModeCount[keymode]++;
     break;
-  case B10100000:
+  case B10000010:
     ModeCount[Mousemode]++;
     break;
-  case B10010000:
+  case B10000100:
     ModeCount[AnalogXYmode]++;
     break;
   case B10001000:
