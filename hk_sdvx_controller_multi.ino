@@ -2,6 +2,12 @@
 #include <HID-Settings.h>
 #include <Rotary.h>
 
+#include <LiquidCrystal_SoftI2C.h>
+// Set SDA to pin A) and SCL to pin A1
+SoftwareWire *wire = new SoftwareWire(A0, A1);
+// Set the LCD address to 0x27 for a 16 chars and 2 line display
+LiquidCrystal_I2C lcd(0x27, 16, 2, wire);
+
 enum Mode
 {
   keymode,       //キー入力モード
@@ -38,12 +44,16 @@ uint16_t AnalogPadrz = 0;
 
 int Mode;
 int ModeCount[7];
-const int MODECOUNTMAX = 200; //モード切り替え時の長押し時間
+const int MODECOUNTMAX = 150; //モード切り替え時の長押し時間
 Button button;
 int ButtonFlag;
 
 void setup()
 {
+  lcd.begin();
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print("key");
 
   Serial.begin(9600);
   Gamepad.begin();
@@ -61,6 +71,7 @@ void setup()
 
 void loop()
 {
+
   keyFunc();
   ReduseValue();
   ModeChange();
@@ -70,8 +81,9 @@ void loop()
   // Serial.println("right" + String(1) + ":" + Arrayright[1]);
   // Serial.println("left" + String(1) + ":" + Arrayleft[1]);
   //  Serial.println("sizeof int :" + String(sizeof(int)));
-  Serial.println("Mode:" + String(Mode));
+  // Serial.println("Mode:" + String(Mode));
 }
+
 void ReduseValue() //右、左つまみの値を減らし続ける
 {
   for (int i = 0; i < (sizeof(Arrayleft) / sizeof(int)); i++)
@@ -91,7 +103,6 @@ void ReduseValue() //右、左つまみの値を減らし続ける
 }
 void keyFunc()
 {
-
   for (int i = 0; i < (sizeof(button.keymap) / sizeof(char)); i++)
   {
 
@@ -189,14 +200,17 @@ ISR(PCINT0_vect)
 void ModeChange()
 {
   unsigned char result[2];
-  for (int i = 0; i < 8; i++)
+  for (int i = 0; i < (sizeof(button.keymap) / sizeof(char)); i++)
   {
 
     if (!digitalRead(13) == HIGH && !digitalRead(i) == HIGH)
     {
-      ButtonFlag = B10000000 | !digitalRead(i) << i;
+      ButtonFlag = B10000000 | !digitalRead(i) << i;  
+      lcd.setCursor(0, 1);
+  lcd.print(ButtonFlag, BIN);
     }
-  }
+    
+    }
   Serial.println(ButtonFlag, BIN);
 
   switch (ButtonFlag)
@@ -219,24 +233,39 @@ void ModeChange()
     ModeCount[Mousemode] = 0;
     ModeCount[AnalogXYmode] = 0;
     ModeCount[AnalogZrZmode] = 0;
+
     break;
   }
 
   if (ModeCount[keymode] > MODECOUNTMAX)
   {
     Mode = keymode;
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("key");
   }
   else if (ModeCount[Mousemode] > MODECOUNTMAX)
   {
     Mode = Mousemode;
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("MouseXY");
   }
   else if (ModeCount[AnalogXYmode] > MODECOUNTMAX)
   {
     Mode = AnalogXYmode;
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("AnalogXY");
   }
   else if (ModeCount[AnalogZrZmode] > MODECOUNTMAX)
   {
     Mode = AnalogZrZmode;
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("AnarogRZ");
   }
+
+
   ButtonFlag = B00000000;
 }
