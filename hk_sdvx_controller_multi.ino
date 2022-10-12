@@ -42,9 +42,9 @@ int16_t AnalogPadY = 0;
 uint16_t AnalogPadz = 0;
 uint16_t AnalogPadrz = 0;
 
-int Mode;
+int mode = 0;
 int ModeCount[7];
-const int MODECOUNTMAX = 150; //モード切り替え時の長押し時間
+const int MODECOUNTMAX = 80; //モード切り替え時の長押し時間
 Button button;
 int ButtonFlag;
 
@@ -53,7 +53,6 @@ void setup()
   lcd.begin();
   lcd.backlight();
   lcd.setCursor(0, 0);
-  lcd.print("key");
 
   Serial.begin(9600);
   Gamepad.begin();
@@ -66,7 +65,6 @@ void setup()
   PCICR |= (1 << PCIE0);
   PCMSK0 |= (1 << PCINT4) | (1 << PCINT5) | (1 << PCINT6) | (1 << PCINT7);
   sei();
-  Mode = 0;
 }
 
 void loop()
@@ -75,7 +73,7 @@ void loop()
   keyFunc();
   ReduseValue();
   ModeChange();
-
+  LCDShow();
   // Serial.println("right" + String(0) + ":" + Arrayright[0]);
   // Serial.println("left" + String(0) + ":" + Arrayleft[0]);
   // Serial.println("right" + String(1) + ":" + Arrayright[1]);
@@ -83,7 +81,28 @@ void loop()
   //  Serial.println("sizeof int :" + String(sizeof(int)));
   // Serial.println("Mode:" + String(Mode));
 }
-
+void LCDShow()
+{
+  lcd.setCursor(0, 0); // x,y
+  // lcd.print(String(Mode));
+  if (mode == 0)
+  {
+    lcd.print("keyboard");
+  }
+  else if (mode == 1)
+  {
+    lcd.print("MouseXY ");
+  }
+  else if (mode == 2)
+  {
+    lcd.print("AnalogXY");
+  }
+  else if (mode == 3)
+  {
+    lcd.print("AnalogRZ");
+  }
+  // Serial.print(mode);
+}
 void ReduseValue() //右、左つまみの値を減らし続ける
 {
   for (int i = 0; i < (sizeof(Arrayleft) / sizeof(int)); i++)
@@ -115,7 +134,7 @@ void keyFunc()
       NKROKeyboard.release(button.keymap[i]);
     }
   }
-  if (Mode == keymode)
+  if (mode == keymode)
   {
     //キーボードモード
 
@@ -124,7 +143,7 @@ void keyFunc()
     Arrayleft[button.VOL_L] > 0 ? NKROKeyboard.press(button.VOL_LL) : NKROKeyboard.release(button.VOL_LL);  //左のつまみが左回転
     Arrayleft[button.VOL_R] > 0 ? NKROKeyboard.press(button.VOL_RL) : NKROKeyboard.release(button.VOL_RL);  //右のつまみが左回転
   }
-  else if (Mode == Mousemode)
+  else if (mode == Mousemode)
   {
     //マウス座標モード
     int pos = 30;
@@ -133,7 +152,7 @@ void keyFunc()
     Arrayleft[button.VOL_L] > 0 ? Mouse.move(-pos, 0) : Mouse.move(0, 0); //左のつまみが左回転
     Arrayleft[button.VOL_R] > 0 ? Mouse.move(0, -pos) : Mouse.move(0, 0); //右のつまみが右回転
   }
-  else if (Mode == AnalogXYmode)
+  else if (mode == AnalogXYmode)
   {
     //アナログスティックXYモード
     int AddXY = 2500;
@@ -147,7 +166,7 @@ void keyFunc()
 
     Gamepad.write(); //送信
   }
-  else if (Mode == AnalogZrZmode)
+  else if (mode == AnalogZrZmode)
   {
     //アナログスライダーモード
     int Addrrz = 2500;
@@ -205,13 +224,20 @@ void ModeChange()
 
     if (!digitalRead(13) == HIGH && !digitalRead(i) == HIGH)
     {
-      ButtonFlag = B10000000 | !digitalRead(i) << i;  
-      lcd.setCursor(0, 1);
-  lcd.print(ButtonFlag, BIN);
+      ButtonFlag = B10000000 | !digitalRead(i) << i;
     }
-    
-    }
-  Serial.println(ButtonFlag, BIN);
+  }
+  if (ButtonFlag == 0)
+  {
+    lcd.setCursor(0, 1);
+    lcd.print("00000000");
+  }
+  else
+  {
+    lcd.setCursor(0, 1);
+    lcd.print(ButtonFlag, BIN);
+  }
+  // Serial.println(ButtonFlag, BIN);
 
   switch (ButtonFlag)
   {
@@ -239,33 +265,32 @@ void ModeChange()
 
   if (ModeCount[keymode] > MODECOUNTMAX)
   {
-    Mode = keymode;
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("key");
+    mode = keymode;
+    // lcd.clear();
+    // lcd.setCursor(0, 0);
+    // lcd.print("key");
   }
   else if (ModeCount[Mousemode] > MODECOUNTMAX)
   {
-    Mode = Mousemode;
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("MouseXY");
+    mode = Mousemode;
+    // lcd.clear();
+    // lcd.setCursor(0, 0);
+    // lcd.print("MouseXY");
   }
   else if (ModeCount[AnalogXYmode] > MODECOUNTMAX)
   {
-    Mode = AnalogXYmode;
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("AnalogXY");
+    mode = AnalogXYmode;
+    // lcd.clear();
+    // lcd.setCursor(0, 0);
+    // lcd.print("AnalogXY");
   }
   else if (ModeCount[AnalogZrZmode] > MODECOUNTMAX)
   {
-    Mode = AnalogZrZmode;
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("AnarogRZ");
+    mode = AnalogZrZmode;
+    // lcd.clear();
+    // lcd.setCursor(0, 0);
+    // lcd.print("AnarogRZ");
   }
-
 
   ButtonFlag = B00000000;
 }
