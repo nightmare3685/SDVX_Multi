@@ -84,24 +84,25 @@ void loop()
 void LCDShow()
 {
   lcd.setCursor(0, 0); // x,y
-  // lcd.print(String(Mode));
-  if (mode == 0)
+
+  switch (mode)
   {
+  case keymode:
     lcd.print("keyboard");
-  }
-  else if (mode == 1)
-  {
+    break;
+  case Mousemode:
     lcd.print("MouseXY ");
-  }
-  else if (mode == 2)
-  {
+    break;
+  case AnalogXYmode:
     lcd.print("AnalogXY");
-  }
-  else if (mode == 3)
-  {
+    break;
+  case AnalogZrZmode:
     lcd.print("AnalogRZ");
+    break;
+
+  default:
+    break;
   }
-  // Serial.print(mode);
 }
 void ReduseValue() //右、左つまみの値を減らし続ける
 {
