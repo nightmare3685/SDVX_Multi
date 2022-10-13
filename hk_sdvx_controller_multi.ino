@@ -3,7 +3,7 @@
 #include <Rotary.h>
 
 #include <LiquidCrystal_SoftI2C.h>
-// Set SDA to pin A) and SCL to pin A1
+// Set SDA to pin A0 and SCL to pin A1
 SoftwareWire *wire = new SoftwareWire(A0, A1);
 // Set the LCD address to 0x27 for a 16 chars and 2 line display
 LiquidCrystal_I2C lcd(0x27, 16, 2, wire);
@@ -64,6 +64,7 @@ void setup()
   }
   PCICR |= (1 << PCIE0);
   PCMSK0 |= (1 << PCINT4) | (1 << PCINT5) | (1 << PCINT6) | (1 << PCINT7);
+
   sei();
 }
 
@@ -78,7 +79,7 @@ void loop()
   // Serial.println("left" + String(0) + ":" + Arrayleft[0]);
   // Serial.println("right" + String(1) + ":" + Arrayright[1]);
   // Serial.println("left" + String(1) + ":" + Arrayleft[1]);
-  //  Serial.println("sizeof int :" + String(sizeof(int)));
+  // Serial.println("sizeof int :" + String(sizeof(int)));
   // Serial.println("Mode:" + String(Mode));
 }
 void LCDShow()
@@ -267,30 +268,22 @@ void ModeChange()
   if (ModeCount[keymode] > MODECOUNTMAX)
   {
     mode = keymode;
-    // lcd.clear();
-    // lcd.setCursor(0, 0);
-    // lcd.print("key");
+
   }
   else if (ModeCount[Mousemode] > MODECOUNTMAX)
   {
     mode = Mousemode;
-    // lcd.clear();
-    // lcd.setCursor(0, 0);
-    // lcd.print("MouseXY");
+
   }
   else if (ModeCount[AnalogXYmode] > MODECOUNTMAX)
   {
     mode = AnalogXYmode;
-    // lcd.clear();
-    // lcd.setCursor(0, 0);
-    // lcd.print("AnalogXY");
+
   }
   else if (ModeCount[AnalogZrZmode] > MODECOUNTMAX)
   {
     mode = AnalogZrZmode;
-    // lcd.clear();
-    // lcd.setCursor(0, 0);
-    // lcd.print("AnarogRZ");
+
   }
 
   ButtonFlag = B00000000;
