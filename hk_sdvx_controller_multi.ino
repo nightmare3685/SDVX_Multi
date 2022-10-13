@@ -136,6 +136,14 @@ void keyFunc()
       NKROKeyboard.release(button.keymap[i]);
     }
   }
+  if (!digitalRead(6) == HIGH)
+  {
+    NKROKeyboard.press(KEY_ENTER);
+  }
+  else
+  {
+    NKROKeyboard.release(KEY_ENTER);
+  }
   if (mode == keymode)
   {
     //キーボードモード
@@ -224,15 +232,15 @@ void ModeChange()
   for (int i = 0; i < (sizeof(button.keymap) / sizeof(char)); i++)
   {
 
-    if (!digitalRead(13) == HIGH && !digitalRead(i) == HIGH)
+    if (!digitalRead(6) == HIGH && !digitalRead(i) == HIGH)
     {
-      ButtonFlag = B10000000 | !digitalRead(i) << i;
+      ButtonFlag = B1000000 | !digitalRead(i) << i;
     }
   }
   if (ButtonFlag == 0)
   {
     lcd.setCursor(0, 1);
-    lcd.print("00000000");
+    lcd.print("0000000");
   }
   else
   {
@@ -244,16 +252,16 @@ void ModeChange()
   switch (ButtonFlag)
   {
 
-  case B10000001:
+  case B1000001:
     ModeCount[keymode]++;
     break;
-  case B10000010:
+  case B1000010:
     ModeCount[Mousemode]++;
     break;
-  case B10000100:
+  case B1000100:
     ModeCount[AnalogXYmode]++;
     break;
-  case B10001000:
+  case B1001000:
     ModeCount[AnalogZrZmode]++;
     break;
   default:
@@ -268,22 +276,18 @@ void ModeChange()
   if (ModeCount[keymode] > MODECOUNTMAX)
   {
     mode = keymode;
-
   }
   else if (ModeCount[Mousemode] > MODECOUNTMAX)
   {
     mode = Mousemode;
-
   }
   else if (ModeCount[AnalogXYmode] > MODECOUNTMAX)
   {
     mode = AnalogXYmode;
-
   }
   else if (ModeCount[AnalogZrZmode] > MODECOUNTMAX)
   {
     mode = AnalogZrZmode;
-
   }
 
   ButtonFlag = B00000000;
