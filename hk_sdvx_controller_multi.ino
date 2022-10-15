@@ -25,10 +25,10 @@ public:
 private:
   ;
 };
-const char ENC1_A = 8; // D8
-const char ENC1_B = 9;
-const char ENC2_A = 10;
-const char ENC2_B = 11;
+const char ENC1_A = 8;  // D8
+const char ENC1_B = 9;  // D9
+const char ENC2_A = 10; // D10
+const char ENC2_B = 11; // D11
 
 Rotary r1 = Rotary(ENC1_A, ENC1_B);
 Rotary r2 = Rotary(ENC2_A, ENC2_B);
