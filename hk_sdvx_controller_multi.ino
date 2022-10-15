@@ -25,7 +25,7 @@ public:
 private:
   ;
 };
-const char ENC1_A = D8; 
+const char ENC1_A = 8; // D8
 const char ENC1_B = 9;
 const char ENC2_A = 10;
 const char ENC2_B = 11;
