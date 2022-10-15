@@ -18,14 +18,14 @@ enum Mode
 class Button
 {
 public:
-  const char keymap[6] = {'s', 'd', 'k', 'l', 'c', 'm' /*6:Enter 7:ESC*/};
+  const char keymap[6] = {'s', 'd', 'k', 'l', 'c', 'm'};
   const char VOL_L = 0, VOL_R = 1;
   const char VOL_LL = 'q', VOL_LR = 'w', VOL_RL = 'o', VOL_RR = 'p';
 
 private:
   ;
 };
-const char ENC1_A = 8;
+const char ENC1_A = D8; 
 const char ENC1_B = 9;
 const char ENC2_A = 10;
 const char ENC2_B = 11;
@@ -144,6 +144,7 @@ void keyFunc()
   {
     NKROKeyboard.release(KEY_ENTER);
   }
+
   if (mode == keymode)
   {
     //キーボードモード
