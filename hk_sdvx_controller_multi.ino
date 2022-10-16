@@ -25,10 +25,10 @@ public:
 private:
   ;
 };
-const char ENC1_A = 8;  // D8
-const char ENC1_B = 9;  // D9
-const char ENC2_A = 10; // D10
-const char ENC2_B = 11; // D11
+const byte ENC1_A = 8;  // D8
+const byte ENC1_B = 9;  // D9
+const byte ENC2_A = 10; // D10
+const byte ENC2_B = 11; // D11
 
 Rotary r1 = Rotary(ENC1_A, ENC1_B);
 Rotary r2 = Rotary(ENC2_A, ENC2_B);
@@ -42,9 +42,9 @@ int16_t AnalogPadY = 0;
 uint16_t AnalogPadz = 0;
 uint16_t AnalogPadrz = 0;
 
-int mode = 0;
-int ModeCount[7];
-const int MODECOUNTMAX = 80; //モード切り替え時の長押し時間
+byte mode = 0;
+byte ModeCount[7];
+const byte MODECOUNTMAX = 80; //モード切り替え時の長押し時間
 Button button;
 int ButtonFlag;
 
@@ -64,7 +64,6 @@ void setup()
   }
   PCICR |= (1 << PCIE0);
   PCMSK0 |= (1 << PCINT4) | (1 << PCINT5) | (1 << PCINT6) | (1 << PCINT7);
-
   sei();
 }
 
@@ -157,7 +156,7 @@ void keyFunc()
   else if (mode == Mousemode)
   {
     //マウス座標モード
-    int pos = 30;
+    uint8_t pos = 30;
     Arrayright[button.VOL_L] > 0 ? Mouse.move(pos, 0) : Mouse.move(0, 0); //左のつまみが右回転
     Arrayright[button.VOL_R] > 0 ? Mouse.move(0, pos) : Mouse.move(0, 0); //右のつまみが左回転
     Arrayleft[button.VOL_L] > 0 ? Mouse.move(-pos, 0) : Mouse.move(0, 0); //左のつまみが左回転
@@ -166,7 +165,7 @@ void keyFunc()
   else if (mode == AnalogXYmode)
   {
     //アナログスティックXYモード
-    int AddXY = 2500;
+    uint8_t AddXY = 2500;
     Arrayright[button.VOL_L] > 0 ? AnalogPadX += AddXY : AnalogPadX += 0; //左のつまみが右回転
     Arrayright[button.VOL_R] > 0 ? AnalogPadY += AddXY : AnalogPadY += 0; //右のつまみが左回転
     Arrayleft[button.VOL_L] > 0 ? AnalogPadX -= AddXY : AnalogPadX -= 0;  //左のつまみが左回転
@@ -180,7 +179,7 @@ void keyFunc()
   else if (mode == AnalogZrZmode)
   {
     //アナログスライダーモード
-    int Addrrz = 2500;
+    uint8_t Addrrz = 2500;
     Arrayright[button.VOL_L] > 0 ? AnalogPadz += Addrrz : AnalogPadz += 0;   //左のつまみが右回転
     Arrayright[button.VOL_R] > 0 ? AnalogPadrz += Addrrz : AnalogPadrz += 0; //右のつまみが左回転
     Arrayleft[button.VOL_L] > 0 ? AnalogPadz -= Addrrz : AnalogPadz -= 0;    //左のつまみが左回転
@@ -195,11 +194,11 @@ void keyFunc()
 
 ISR(PCINT0_vect)
 {
-  int result[2];
+  unsigned char result[2];
   result[0] = r1.process();
   result[1] = r2.process();
 
-  for (int i = 0; i <= 1; i++)
+  for (int i = 0; i < (sizeof(result) / sizeof(unsigned char)); i++)
   {
 
     // Serial.println("right" + String(i) + ":" + Arrayright[i]);
@@ -229,7 +228,6 @@ ISR(PCINT0_vect)
 
 void ModeChange()
 {
-  unsigned char result[2];
   for (int i = 0; i < (sizeof(button.keymap) / sizeof(char)); i++)
   {
 
