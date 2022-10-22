@@ -35,7 +35,7 @@ Rotary r2 = Rotary(ENC2_A, ENC2_B);
 volatile int posision[2] = {0, 0};
 volatile int Arrayright[2] = {0, 0};
 volatile int Arrayleft[2] = {0, 0};
-volatile const int ENCMAX = 10;
+volatile const int ENCMAX = 8;
 
 int16_t AnalogPadX = 0;
 int16_t AnalogPadY = 0;
@@ -203,8 +203,8 @@ ISR(PCINT0_vect)
 
     // Serial.println("right" + String(i) + ":" + Arrayright[i]);
     // Serial.println("left" + String(i) + ":" + Arrayleft[i]);
-    if (result[i] == DIR_CCW)
-    { //反時計回りに回った時
+    if (result[i] == DIR_CW) //時計回りに回った時
+    {
 
       Arrayright[i] -= ENCMAX / 2;
       if (Arrayright[i] < 0)
@@ -213,9 +213,8 @@ ISR(PCINT0_vect)
         Arrayright[i] = 0;
       }
     }
-    else if (result[i] == DIR_CW)
-    { //時計回りに回った時
-
+    else if (result[i] == DIR_CCW) //反時計回りに回った時
+    {
       Arrayleft[i] -= ENCMAX / 2;
       if (Arrayleft[i] < 0)
       {
