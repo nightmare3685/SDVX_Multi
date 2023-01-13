@@ -12,19 +12,20 @@ int FastDigitalRead(int var)
 {
   switch (var)
   {
-  case 0:
+  case 0:                                     // D0
     return (PIND & _BV(2)) == 0 ? LOW : HIGH; // PD2
-  case 1:
+  case 1:                                     // D1
     return (PIND & _BV(3)) == 0 ? LOW : HIGH; // PD3
-  case 2:
+  case 2:                                     // D2
     return (PIND & _BV(1)) == 0 ? LOW : HIGH; // PD1
-  case 3:
+  case 3:                                     // D3
     return (PIND & _BV(0)) == 0 ? LOW : HIGH; // PD0
-  case 4:
+  case 4:                                     // D4
     return (PIND & _BV(4)) == 0 ? LOW : HIGH; // PD4
-  case 5:
+  case 5:                                     // D5
     return (PINC & _BV(6)) == 0 ? LOW : HIGH; // PC6
   default:
+#error "引数は0-13及びA0-A5()である必要があります"
     break;
   }
 }
