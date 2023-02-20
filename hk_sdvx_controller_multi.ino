@@ -220,7 +220,7 @@ ISR(PCINT0_vect)
   result[0] = r1.process();
   result[1] = r2.process();
 
-  for (int i = 0; i < (sizeof(result) / sizeof(unsigned char)); i++)
+  for (int i = 0; i < (sizeof(result) / sizeof(result[0])); i++)
   {
 
     // Serial.println("right" + String(i) + ":" + Arrayright[i]);
@@ -249,7 +249,7 @@ ISR(PCINT0_vect)
 
 void ModeChange()
 {
-  for (int i = 0; i < (sizeof(button.keymap) / sizeof(char)); i++)
+  for (int i = 0; i < (sizeof(button.keymap) / sizeof(button.keymap[0])); i++)
   {
 
     if (!digitalRead(6) == HIGH && !digitalRead(i) == HIGH)
