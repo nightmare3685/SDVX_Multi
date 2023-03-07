@@ -150,30 +150,32 @@ void keyFunc()
 
     if (!digitalRead(i) == HIGH)
     {
-      NKROKeyboard.press(button.keymap[i]);
+      NKROKeyboard.add(button.keymap[i]);
     }
     else if (!digitalRead(i) == LOW)
     {
-      NKROKeyboard.release(button.keymap[i]);
+      NKROKeyboard.remove(button.keymap[i]);
     }
   }
   if (!digitalRead(6) == HIGH)
   {
-    NKROKeyboard.press(KEY_ENTER);
+    NKROKeyboard.add(KEY_ENTER);
   }
   else
   {
-    NKROKeyboard.release(KEY_ENTER);
+    NKROKeyboard.remove(KEY_ENTER);
   }
+  NKROKeyboard.send();
 
   if (mode == keymode)
   {
     // キーボードモード
 
-    Arrayright[button.VOL_L] > 0 ? NKROKeyboard.press(button.VOL_LR) : NKROKeyboard.release(button.VOL_LR); // 左のつまみが右回転
-    Arrayright[button.VOL_R] > 0 ? NKROKeyboard.press(button.VOL_RR) : NKROKeyboard.release(button.VOL_RR); // 右のつまみが右回転
-    Arrayleft[button.VOL_L] > 0 ? NKROKeyboard.press(button.VOL_LL) : NKROKeyboard.release(button.VOL_LL);  // 左のつまみが左回転
-    Arrayleft[button.VOL_R] > 0 ? NKROKeyboard.press(button.VOL_RL) : NKROKeyboard.release(button.VOL_RL);  // 右のつまみが左回転
+    Arrayright[button.VOL_L] > 0 ? NKROKeyboard.add(button.VOL_LR) : NKROKeyboard.remove(button.VOL_LR); // 左のつまみが右回転
+    Arrayright[button.VOL_R] > 0 ? NKROKeyboard.add(button.VOL_RR) : NKROKeyboard.remove(button.VOL_RR); // 右のつまみが右回転
+    Arrayleft[button.VOL_L] > 0 ? NKROKeyboard.add(button.VOL_LL) : NKROKeyboard.remove(button.VOL_LL);  // 左のつまみが左回転
+    Arrayleft[button.VOL_R] > 0 ? NKROKeyboard.add(button.VOL_RL) : NKROKeyboard.remove(button.VOL_RL);  // 右のつまみが左回転
+    NKROKeyboard.send();
   }
   else if (mode == Mousemode)
   {
