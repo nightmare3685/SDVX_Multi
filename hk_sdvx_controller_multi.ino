@@ -8,28 +8,6 @@ SoftwareWire *wire = new SoftwareWire(A0, A1);
 // Set the LCD address to 0x27 for a 16 chars and 2 line display
 LiquidCrystal_I2C lcd(0x27, 16, 2, wire);
 
-int FastDigitalRead(int var)
-{
-  switch (var)
-  {
-  case 0:                                     // D0
-    return (PIND & _BV(2)) == 0 ? LOW : HIGH; // PD2
-  case 1:                                     // D1
-    return (PIND & _BV(3)) == 0 ? LOW : HIGH; // PD3
-  case 2:                                     // D2
-    return (PIND & _BV(1)) == 0 ? LOW : HIGH; // PD1
-  case 3:                                     // D3
-    return (PIND & _BV(0)) == 0 ? LOW : HIGH; // PD0
-  case 4:                                     // D4
-    return (PIND & _BV(4)) == 0 ? LOW : HIGH; // PD4
-  case 5:                                     // D5
-    return (PINC & _BV(6)) == 0 ? LOW : HIGH; // PC6
-  default:
-#error "引数は0-13及びA0-A5()である必要があります"
-    break;
-  }
-}
-
 enum Mode
 {
   keymode,       // キー入力モード
