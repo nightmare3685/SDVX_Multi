@@ -3,6 +3,8 @@
 #include <Rotary.h>
 #include <LiquidCrystal_SoftI2C.h>
 
+const bool Push = false;
+const bool Release = true;
 // Set SDA to pin A0 and SCL to pin A1
 SoftwareWire *wire = new SoftwareWire(A0, A1);
 // Set the LCD address to 0x27 for a 16 chars and 2 line display
@@ -126,16 +128,16 @@ void keyFunc()
   for (int i = 0; i < (sizeof(button.keymap) / sizeof(button.keymap[0])); i++)
   {
 
-    if (!digitalRead(i) == HIGH)
+    if (digitalRead(i) == Push)
     {
       NKROKeyboard.add(button.keymap[i]);
     }
-    else if (!digitalRead(i) == LOW)
+    else if (digitalRead(i) == Release)
     {
       NKROKeyboard.remove(button.keymap[i]);
     }
   }
-  if (!digitalRead(6) == HIGH)
+  if (digitalRead(6) == Push)
   {
     NKROKeyboard.add(KEY_ENTER);
   }
