@@ -1,4 +1,4 @@
-"# SDVX_Multi" 
+"SDVX_Multi" 
 某音ゲーの自作コントローラーのプログラムです。<br>
 Arduino IDEから書き込んでください。<br>
 2023/02/20時点で**Arduino Leonardo**に対応しています<br>
